@@ -17,7 +17,7 @@ class QueryObject:
         return "url: {0}\nheaders: {1}\nparams: {2}".format(self.url, self.headers, self.params)
 
     # query-dependent, qc means current calling QueryCaller
-    def handler(self, qc: QueryCaller, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
         raise NotImplementedError()
 
     # query-independent
@@ -80,7 +80,7 @@ class DetailQueryObject(QueryObject):
         QueryObject.__init__(
             self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(id))
 
-    def handler(self, qc, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
         pass  # database access needed / DBMS .py needed
 
     def onExecute(self, *args, **kwargs):
@@ -98,7 +98,7 @@ class DailyQueryObject(QueryObject):
         QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all',
                              match_types=gt[gametype], start_date=self.d_start.isoformat(' '), end_date=self.d_end.isoformat(' '), limit=500)
 
-    def handler(self, qc, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
         pass  # for every game, check if f match and create new QueryObject
 
     def onExecute(self, *args, **kwargs):
