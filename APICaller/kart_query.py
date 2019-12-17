@@ -14,6 +14,14 @@ class QueryObject:
     def __str__(self):
         return "url: {0}\nheaders: {1}\nparams: {2}".format(self.url, self.headers, self.params)
 
+    # query-dependent, qc means current calling QueryCaller
+    def handler(self, qc: QueryCaller, *args, **kwargs):
+        raise NotImplementedError()
+
+    # query-independent
+    def onExecute(self, *args, **kwargs):
+        raise NotImplementedError()
+
 
 class QueryQueue:
     def __init__(self):
