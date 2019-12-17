@@ -8,39 +8,39 @@ gt = json.load(open('metadata/gameType.json'))
 
 
 class QueryObject:
-    def __init__(self, url: str, **kwargs):
+    def __init__(self, url: str, **kwargs) -> QueryObject:
         self.url = url
         self.headers = {}
         self.params = kwargs
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "url: {0}\nheaders: {1}\nparams: {2}".format(self.url, self.headers, self.params)
 
     # query-dependent, qc means current calling QueryCaller
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
         raise NotImplementedError()
 
     # query-independent
-    def onExecute(self, *args, **kwargs):
+    def onExecute(self, *args, **kwargs) -> None:
         raise NotImplementedError()
 
 
 class QueryQueue:
-    def __init__(self):
+    def __init__(self) -> QueryQueue:
         self.q = []
 
-    def enqueue(self, qo: QueryObject):
+    def enqueue(self, qo: QueryObject) -> None:
         qo.headers['Authorization'] = pcg
         self.q.append(qo)
 
-    def dequeue(self):
+    def dequeue(self) -> QueryObject:
         if len(self.q) == 0:
             return None
         return self.q.pop(0)
 
 
 class QueryCaller:
-    def __init__(self, i: float):
+    def __init__(self, i: float) -> QueryCaller:
         if i <= 0:
             raise ValueError()
         self.interval = i
@@ -48,22 +48,22 @@ class QueryCaller:
         self.stopped = True
         self.q = QueryQueue()
 
-    def start(self):
+    def start(self) -> None:
         self.stopped = False
         self.run()
 
-    def stop(self):
+    def stop(self) -> None:
         self.stopped = True
 
-    def pause(self):
+    def pause(self) -> None:
         self.paused = True
 
-    def resume(self):
+    def resume(self) -> None:
         self.paused = False
 
-    def run(self):
+    def run(self) -> None:
         while not self.stopped:
-            while not self.paused:
+            if not self.paused:
                 qo = self.q.dequeue()
                 if qo != None:
                     r = requests.get(
@@ -71,25 +71,25 @@ class QueryCaller:
                     print(r.json())
             time.sleep(self.interval)
 
-    def add_query(self, qo: QueryObject):
+    def add_query(self, qo: QueryObject) -> None:
         self.q.enqueue(qo)
 
 
 class DetailQueryObject(QueryObject):
-    def __init__(self, id: str):
+    def __init__(self, match_id: str) -> DetailQueryObject:
         QueryObject.__init__(
-            self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(id))
+            self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(match_id))
 
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
         pass  # database access needed / DBMS .py needed
 
-    def onExecute(self, *args, **kwargs):
+    def onExecute(self, *args, **kwargs) -> None:
         pass  # log needed
 
 
 # Find all matching games with given gametype and function in specific date
 class DailyQueryObject(QueryObject):
-    def __init__(self, date: datetime.date, gametype: str, f: function):
+    def __init__(self, date: datetime.date, gametype: str, f: function) -> DailyQueryObject:
         self.d_end = datetime.datetime(
             date.year, date.month, date.day, 23, 59, 59)
         self.d_start = datetime.datetime(
@@ -98,8 +98,8 @@ class DailyQueryObject(QueryObject):
         QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all',
                              match_types=gt[gametype], start_date=self.d_start.isoformat(' '), end_date=self.d_end.isoformat(' '), limit=500)
 
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs):
+    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
         pass  # for every game, check if f match and create new QueryObject
 
-    def onExecute(self, *args, **kwargs):
+    def onExecute(self, *args, **kwargs) -> None:
         pass  # log needed
