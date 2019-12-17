@@ -1,8 +1,10 @@
 import json
 import time
 import requests
+import datetime
 
 pcg = json.load(open('key.json'))['PlatinumCapsuleGear']
+gt = json.load(open('metadata/gameType.json'))
 
 
 class QueryObject:
@@ -71,3 +73,33 @@ class QueryCaller:
 
     def add_query(self, qo: QueryObject):
         self.q.enqueue(qo)
+
+
+class DetailQueryObject(QueryObject):
+    def __init__(self, id: str):
+        QueryObject.__init__(
+            self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(id))
+
+    def handler(self, qc, *args, **kwargs):
+        pass  # database access needed / DBMS .py needed
+
+    def onExecute(self, *args, **kwargs):
+        pass  # log needed
+
+
+# Find all matching games with given gametype and function in specific date
+class DailyQueryObject(QueryObject):
+    def __init__(self, date: datetime.date, gametype: str, f: function):
+        self.d_end = datetime.datetime(
+            date.year, date.month, date.day, 23, 59, 59)
+        self.d_start = datetime.datetime(
+            date.year, date.month, date.day, 0, 0, 0)
+        self.f = f
+        QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all',
+                             match_types=gt[gametype], start_date=self.d_start.isoformat(' '), end_date=self.d_end.isoformat(' '), limit=500)
+
+    def handler(self, qc, *args, **kwargs):
+        pass  # for every game, check if f match and create new QueryObject
+
+    def onExecute(self, *args, **kwargs):
+        pass  # log needed
