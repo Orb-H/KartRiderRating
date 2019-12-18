@@ -86,7 +86,8 @@ class DetailQueryObject(QueryObject):
         pass  # database access needed / DBMS .py needed
 
     def onExecute(self, *args, **kwargs) -> None:
-        log('Match detail query with id {0}'.format(self.m))
+        log('{0}: Match detail query with id {1}'.format(
+            datetime.datetime.now().isoformat(), self.m))
 
 
 # Find all matching games with given gametype and function in specific date
@@ -105,8 +106,8 @@ class DailyQueryObject(QueryObject):
         pass  # for every game, check if f match and create new QueryObject
 
     def onExecute(self, *args, **kwargs) -> None:
-        log('Daily query between {0} ~ {1}, gametype {2}, filter: {3}'.format(
-            self.d_start.isoformat(), self.d_end.isoformat(), self.g, self.f))
+        log('{0}: Daily query between {1} ~ {2}, gametype {3}, filter: {4}'.format(
+            datetime.datetime.now().isoformat(), self.d_start.isoformat(), self.d_end.isoformat(), self.g, self.f))
 
 
 def log(s: str) -> None:
