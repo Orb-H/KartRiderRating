@@ -2,6 +2,7 @@ import json
 import time
 import requests
 import datetime
+import threading
 
 pcg = json.load(open('key.json'))['PlatinumCapsuleGear']
 gt = json.load(open('metadata/gameType.json'))
@@ -51,7 +52,8 @@ class QueryCaller:
 
     def start(self) -> None:
         self.stopped = False
-        self.run()
+        t = threading.Thread(target=self.run)
+        t.start()
 
     def stop(self) -> None:
         self.stopped = True
