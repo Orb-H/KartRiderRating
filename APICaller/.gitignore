@@ -3,3 +3,6 @@ key.json
 
 # KartRider API metadata
 metadata/
+
+# Log
+log/
