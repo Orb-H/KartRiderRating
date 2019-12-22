@@ -4,16 +4,21 @@ import mpmath
 import os.path as path
 
 
+mpmath.mp.dps = 100
+
+
 class RatingCalculator:
-    def __init__(self, prefix: str = '') -> RatingCalculator:
-        self.ts = trueskill.TrueSkill(mu=mpmath.mpf(1500), sigma=mpmath.mpf(
-            1500)/3, beta=mpmath.mpf(1500)/6, tau=mpmath.mpf(1500)/300, draw_probability=0, backend='mpmath')
+    def __init__(self, prefix: str = ''):
+        self.ts = trueskill.TrueSkill(
+            mu=1500, sigma=500, beta=250, tau=60, draw_probability=0, backend='mpmath')
         self.p = prefix
 
     def change_prefix(self, prefix: str = '') -> None:
         self.p = prefix
 
-    def rate(self, teams: list) -> None:
+    def rate(self, teams: list, rank: list = None) -> None:
+        if rank == None:
+            rank = range(len(teams))
         team = []
         i = 0
         for t in teams:
@@ -28,7 +33,7 @@ class RatingCalculator:
                     r = self.ts.create_rating()
                 team[i][u] = r
             i += 1
-        team = self.ts.rate(team)
+        team = self.ts.rate(team, ranks=rank)
         for t in team:
             for u in t:
                 s = 'data/{0}_{1}.json'.format(self.p, u)
