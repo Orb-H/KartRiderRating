@@ -8,15 +8,19 @@ mpmath.mp.dps = 100
 
 
 class RatingCalculator:
-    def __init__(self, prefix: str = ''):
+    instance = None
+
+    @staticmethod
+    def getinstance():
+        if RatingCalculator.instance == None:
+            RatingCalculator.instance = RatingCalculator()
+        return RatingCalculator.instance
+
+    def __init__(self):
         self.ts = trueskill.TrueSkill(
             mu=1500, sigma=500, beta=250, tau=60, draw_probability=0, backend='mpmath')
-        self.p = prefix
 
-    def change_prefix(self, prefix: str = '') -> None:
-        self.p = prefix
-
-    def rate(self, teams: list, rank: list = None) -> None:
+    def rate(self, teams: list, rank: list = None, prefix: str = '') -> None:
         if rank == None:
             rank = range(len(teams))
         team = []
