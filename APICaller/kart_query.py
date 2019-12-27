@@ -76,6 +76,7 @@ class QueryCaller:
                     qo.onExecute()
                     r = requests.get(
                         url=qo.url, headers=qo.headers, params=qo.params)
+                    qo.handler(self, r)
             time.sleep(self.interval)
 
     def add_query(self, qo: QueryObject) -> None:
@@ -117,6 +118,6 @@ class DailyQueryObject(QueryObject):
 
 
 def log(s: str) -> None:
-    # print(s)
+    print(s)
     l.write(s)
     l.write('\n')
