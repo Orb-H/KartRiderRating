@@ -3,10 +3,11 @@ import time
 import requests
 import datetime
 import threading
+import kart_rating as kr
 
 pcg = json.load(open('key.json'))['PlatinumCapsuleGear']
-gt = json.load(open('metadata/gameType.json'))
-l = open('log_{0}'.format(datetime.datetime.now().isoformat()))
+gt = json.load(open('metadata/gameType.json', encoding='utf8'))
+l = open('log/log_{0}'.format(datetime.datetime.now().timestamp()), mode='w')
 
 
 class QueryObject:
@@ -92,7 +93,7 @@ class DetailQueryObject(QueryObject):
             datetime.datetime.now().isoformat(), self.m))
 
 
-# Find all matching games with given gametype and function in specific date
+# Find all matching games with given gametype and function in a specific date
 class DailyQueryObject(QueryObject):
     def __init__(self, date: datetime.date, gametype: str, f: dict) -> DailyQueryObject:
         self.d_end = datetime.datetime(
