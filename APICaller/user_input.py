@@ -12,10 +12,7 @@ while True:
     if t[0].lower() == 'stop':
         break
     if t[0].lower() == 'daily':
-        try:
-            y, m, d = t[1].split('-')
-            dqo = kq.DailyQueryObject(datetime.date(y, m, d), '스피드 개인전')
-            qc.add_query(dqo)
-        except:
-            pass
+        y, m, d = [int(x) for x in t[1].split('-')]
+        dqo = kq.DailyQueryObject(datetime.date(y, m, d), '스피드 개인전')
+        qc.add_query(dqo)
 qc.stop()
