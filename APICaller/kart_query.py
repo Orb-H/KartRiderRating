@@ -73,9 +73,9 @@ class QueryCaller:
             if not self.paused:
                 qo = self.q.dequeue()
                 if qo != None:
+                    qo.onExecute()
                     r = requests.get(
                         url=qo.url, headers=qo.headers, params=qo.params)
-                    print(r.json())
             time.sleep(self.interval)
 
     def add_query(self, qo: QueryObject) -> None:
