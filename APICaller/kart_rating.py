@@ -7,11 +7,11 @@ import os.path as path
 mpmath.mp.dps = 100
 
 
-class RatingCalculator:
+class RatingCalculator:  # A calculator for ratings
     instance = None
 
     @staticmethod
-    def getinstance():
+    def getinstance():  # Singleton
         if RatingCalculator.instance == None:
             RatingCalculator.instance = RatingCalculator()
         return RatingCalculator.instance
@@ -28,7 +28,7 @@ class RatingCalculator:
         for t in teams:
             team.append({})
             for u in t:
-                s = 'data/{0}_{1}.json'.format(self.p, u)
+                s = 'data/{0}_{1}.json'.format(prefix, u)
                 if path.exists(s):
                     x = json.load(open(s))
                     r = self.ts.create_rating(mu=mpmath.mpf(
@@ -40,7 +40,7 @@ class RatingCalculator:
         team = self.ts.rate(team, ranks=rank)
         for t in team:
             for u in t:
-                s = 'data/{0}_{1}.json'.format(self.p, u)
+                s = 'data/{0}_{1}.json'.format(prefix, u)
                 r = {}
                 r['mu'], r['sigma'] = str(t[u].mu), str(t[u].sigma)
                 json.dump(r, open(s, 'w'))
