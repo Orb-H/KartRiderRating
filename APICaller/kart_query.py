@@ -11,7 +11,7 @@ l = open('log/log_{0}'.format(datetime.datetime.now().timestamp()), mode='w')
 
 
 class QueryObject:
-    def __init__(self, url: str, **kwargs) -> QueryObject:
+    def __init__(self, url: str, **kwargs) -> 'QueryObject':
         self.url = url
         self.headers = {}
         self.params = kwargs
@@ -20,7 +20,7 @@ class QueryObject:
         return "url: {0}\nheaders: {1}\nparams: {2}".format(self.url, self.headers, self.params)
 
     # query-dependent, qc means current calling QueryCaller
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
+    def handler(self, qc: 'QueryCaller', r: requests.Response, *args, **kwargs) -> None:
         raise NotImplementedError()
 
     # query-independent
@@ -29,21 +29,21 @@ class QueryObject:
 
 
 class QueryQueue:
-    def __init__(self) -> QueryQueue:
+    def __init__(self) -> 'QueryQueue':
         self.q = []
 
-    def enqueue(self, qo: QueryObject) -> None:
+    def enqueue(self, qo: 'QueryObject') -> None:
         qo.headers['Authorization'] = pcg
         self.q.append(qo)
 
-    def dequeue(self) -> QueryObject:
+    def dequeue(self) -> 'QueryObject':
         if len(self.q) == 0:
             return None
         return self.q.pop(0)
 
 
 class QueryCaller:
-    def __init__(self, i: float) -> QueryCaller:
+    def __init__(self, i: float) -> 'QueryCaller':
         if i <= 0:
             raise ValueError()
         self.interval = i
@@ -80,12 +80,12 @@ class QueryCaller:
 
 
 class DetailQueryObject(QueryObject):
-    def __init__(self, match_id: str) -> DetailQueryObject:
+    def __init__(self, match_id: str) -> 'DetailQueryObject':
         self.m = match_id
         QueryObject.__init__(
             self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(match_id))
 
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
+    def handler(self, qc: 'QueryCaller', r: requests.Response, *args, **kwargs) -> None:
         pass  # database access needed / DBMS .py needed
 
     def onExecute(self, *args, **kwargs) -> None:
@@ -95,7 +95,7 @@ class DetailQueryObject(QueryObject):
 
 # Find all matching games with given gametype and function in a specific date
 class DailyQueryObject(QueryObject):
-    def __init__(self, date: datetime.date, gametype: str, f: dict) -> DailyQueryObject:
+    def __init__(self, date: datetime.date, gametype: str, f: dict) -> 'DailyQueryObject':
         self.d_end = datetime.datetime(
             date.year, date.month, date.day, 23, 59, 59)
         self.d_start = datetime.datetime(
@@ -105,7 +105,7 @@ class DailyQueryObject(QueryObject):
         QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all',
                              match_types=gt[gametype], start_date=self.d_start.isoformat(' '), end_date=self.d_end.isoformat(' '), limit=500)
 
-    def handler(self, qc: QueryCaller, r: requests.Response, *args, **kwargs) -> None:
+    def handler(self, qc: 'QueryCaller', r: requests.Response, *args, **kwargs) -> None:
         pass  # for every game, check if f match and create new QueryObject
 
     def onExecute(self, *args, **kwargs) -> None:
