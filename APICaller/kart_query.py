@@ -9,7 +9,8 @@ kr = importlib.import_module('kart_rating')
 
 pcg = json.load(open('key.json'))['PlatinumCapsuleGear']
 gt = json.load(open('metadata/gameType.json', encoding='utf8'))
-l = open('log/log_{0}'.format(datetime.datetime.now().timestamp()), mode='w')
+l = open('log/log_{0}'.format(datetime.datetime.now().timestamp()),
+         mode='w', encoding='utf8')
 
 
 class QueryObject:
@@ -116,5 +117,6 @@ class DailyQueryObject(QueryObject):
 
 
 def log(s: str) -> None:
-    print(s)
+    # print(s)
     l.write(s)
+    l.write('\n')
