@@ -98,7 +98,7 @@ class DetailQueryObject(QueryObject):
 
 # Find all matching games with given gametype and function in a specific date
 class DailyQueryObject(QueryObject):
-    def __init__(self, date: datetime.date, gametype: str, f: dict) -> 'DailyQueryObject':
+    def __init__(self, date: datetime.date, gametype: str, f: dict = {}) -> 'DailyQueryObject':
         self.d_end = datetime.datetime(
             date.year, date.month, date.day, 23, 59, 59)
         self.d_start = datetime.datetime(
