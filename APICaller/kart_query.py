@@ -3,7 +3,9 @@ import time
 import requests
 import datetime
 import threading
-import kart_rating as kr
+import importlib
+
+kr = importlib.import_module('kart_rating')
 
 pcg = json.load(open('key.json'))['PlatinumCapsuleGear']
 gt = json.load(open('metadata/gameType.json', encoding='utf8'))

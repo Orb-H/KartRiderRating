@@ -1,5 +1,7 @@
-from . import kart_query as kq
 import datetime
+import importlib
+
+kq = importlib.import_module('kart_query')
 
 qc = kq.QueryCaller(5)
 qc.start()
