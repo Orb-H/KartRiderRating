@@ -73,10 +73,13 @@ class QueryCaller:
             if not self.paused:
                 qo = self.q.dequeue()
                 if qo != None:
+                    a = datetime.datetime.now()
                     qo.onExecute()
                     r = requests.get(
                         url=qo.url, headers=qo.headers, params=qo.params)
                     qo.handler(self, r)
+                    b = datetime.datetime.now()
+                    log('took {0}s'.format(b-a))
             time.sleep(self.interval)
 
     def add_query(self, qo: QueryObject) -> None:
