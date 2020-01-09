@@ -14,9 +14,10 @@ l = open('log/log_{0}'.format(datetime.datetime.now().timestamp()),
 
 
 class QueryObject:
-    def __init__(self, url: str, **kwargs) -> 'QueryObject':
+    def __init__(self, url: str, function: function, **kwargs) -> 'QueryObject':
         self.url = url
         self.headers = {}
+        self.f = function
         self.params = kwargs
 
     def __str__(self) -> str:
@@ -87,10 +88,10 @@ class QueryCaller:
 
 
 class DetailQueryObject(QueryObject):
-    def __init__(self, match_id: str) -> 'DetailQueryObject':
+    def __init__(self, match_id: str, function: function = None) -> 'DetailQueryObject':
         self.m = match_id
         QueryObject.__init__(
-            self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(match_id))
+            self, 'https://api.nexon.co.kr/kart/v1.0/matches/{0}'.format(match_id), function)
 
     def handler(self, qc: 'QueryCaller', r: requests.Response, *args, **kwargs) -> None:
         pass  # database access needed / DBMS .py needed
@@ -102,14 +103,13 @@ class DetailQueryObject(QueryObject):
 
 # Find all matching games with given gametype and function in a specific date
 class DailyQueryObject(QueryObject):
-    def __init__(self, date: datetime.date, gametype: str, f: dict = {}) -> 'DailyQueryObject':
+    def __init__(self, date: datetime.date, gametype: str, function: function = None) -> 'DailyQueryObject':
         self.d_end = datetime.datetime(
             date.year, date.month, date.day, 23, 59, 59)
         self.d_start = datetime.datetime(
             date.year, date.month, date.day, 0, 0, 0)
         self.g = gametype
-        self.f = f
-        QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all',
+        QueryObject.__init__(self, 'https://api.nexon.co.kr/kart/v1.0/matches/all', function,
                              match_types=gt[gametype], start_date=self.d_start.isoformat(' '), end_date=self.d_end.isoformat(' '), limit=500)
 
     def handler(self, qc: 'QueryCaller', r: requests.Response, *args, **kwargs) -> None:
